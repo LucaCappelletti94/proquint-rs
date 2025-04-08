@@ -5,6 +5,9 @@ use std::fmt;
 use std::fmt::{Display, Formatter};
 use std::ops::{AddAssign, ShlAssign};
 
+#[cfg(feature = "uuid")]
+mod uuid_impl;
+
 #[cfg(test)]
 #[macro_use]
 extern crate quickcheck;
@@ -339,8 +342,8 @@ impl Quintable for std::net::Ipv6Addr {
 #[cfg(test)]
 mod tests {
     use std::net::{Ipv4Addr, Ipv6Addr};
-    use QuintError;
-    use Quintable;
+    use crate::QuintError;
+    use crate::Quintable;
 
     #[test]
     fn quint_too_small() {
