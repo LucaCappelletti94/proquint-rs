@@ -2,9 +2,9 @@ name: Format
 
 on:
   push:
-    branches: [ modernize ]
+    branches: [ master ]
   pull_request:
-    branches: [ modernize ]
+    branches: [ master ]
 
 jobs:
   format:

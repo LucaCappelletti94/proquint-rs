@@ -1,6 +1,6 @@
 # proquint-rs
 
-[![Build Status](https://travis-ci.org/christian-blades-cb/proquint-rs.svg?branch=master)](https://travis-ci.org/christian-blades-cb/proquint-rs)
+[![Build status](https://github.com/christian-blades-cb/proquint-rs/actions/workflows/test.yml/badge.svg)](https://github.com/christian-blades-cb/proquint-rs/actions/)
 [![Latest Version](https://img.shields.io/crates/v/proquint.svg)](https://crates.io/crates/proquint)
 [![Docs](https://docs.rs/proquint/badge.svg)](https://docs.rs/proquint)
 [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/christian-blades-cb/proquint-rs.svg)](http://isitmaintained.com/project/christian-blades-cb/proquint-rs "Average time to resolve an issue")
