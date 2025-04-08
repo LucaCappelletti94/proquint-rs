@@ -27,3 +27,11 @@ assert_eq!(home.to_quint(), "lusab-babad");
 
 assert_eq!(u32::from_quint("rotab-vinat").unwrap(), 3141592653u32);
 ```
+
+## Features
+
+- `uuid`: Support for bidirectional conversion of UUIDs to proquints.
+
+## License
+
+This project is licensed under the terms of the BSD-3-Clause license. See the [LICENSE](LICENSE) file for details.

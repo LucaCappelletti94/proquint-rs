@@ -1,0 +1,27 @@
+[package]
+name = "proquint-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2024"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+honggfuzz = "0.5"
+uuid = { version = "1.16.0", features = ["arbitrary"]}
+proquint = { path = "../", features = ["uuid"] }
+arbitrary = { version = "1", features = ["derive"] }
+
+# Prevent this from interfering with workspaces
+[workspace]
+members = ["."]
+
+[profile.release]
+debug = 1
+
+[[bin]]
+name = "uuid"
+path = "fuzz_targets/uuid.rs"
+test = false
+doc = false
