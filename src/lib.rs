@@ -1,22 +1,4 @@
-//! Library for converting to and from proquints.
-//!
-//! # Proquint
-//!
-//! A proquint is a pronouncable representation of an identifier, such
-//! as an IP address, document number, user id, etc. The purpose is to
-//! provide a more convenient way for humans to
-//! interact/remember/communicate with unique identifiers.
-//!
-//! Original proposal found here: https://arxiv.org/html/0901.4016
-//!
-//! # Example
-//! ```
-//! use proquint::Quintable;
-//! use std::net::Ipv4Addr;
-//!
-//! let home = Ipv4Addr::new(127, 0, 0, 1);
-//! assert_eq!(home.to_quint(), "lusab-babad");
-//! ```
+#![doc = include_str!("../README.md")]
 
 use std::error;
 use std::fmt::{Display, Formatter};
@@ -53,10 +35,6 @@ impl error::Error for QuintError {
             QuintError::InputInvalid => "input was not a valid proquint",
         }
     }
-
-    fn cause(&self) -> Option<&error::Error> {
-        None
-    }
 }
 
 /// Trait for values that can be converted to proquints
@@ -84,7 +62,7 @@ pub trait Quintable
     ///
     /// assert_eq!(u32::from_quint("rotab-vinat").unwrap(), 3141592653u32);
     /// ```
-    fn from_quint(&str) -> Result<Self, QuintError>;
+    fn from_quint(value: &str) -> Result<Self, QuintError>;
 }
 
 macro_rules! decons {
@@ -119,9 +97,9 @@ macro_rules! vowel_u16 {
     }
 }
 
-const UINT2CONSONANT: &'static [char] = &['b', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p',
+const UINT2CONSONANT: &[char] = &['b', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p',
                                           'r', 's', 't', 'v', 'z'];
-const UINT2VOWEL: &'static [char] = &['a', 'i', 'o', 'u'];
+const UINT2VOWEL: &[char] = &['a', 'i', 'o', 'u'];
 
 const MASK_FIRST4_U16: u16 = 0xF000;
 const MASK_FIRST2_U16: u16 = 0xC000;

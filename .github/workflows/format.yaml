@@ -1,0 +1,29 @@
+name: Format
+
+on:
+  push:
+    branches: [ modernize ]
+  pull_request:
+    branches: [ modernize ]
+
+jobs:
+  format:
+    name: Format
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Install Rust stable
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+          components: rustfmt
+      
+      - name: Check formatting
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --all -- --check

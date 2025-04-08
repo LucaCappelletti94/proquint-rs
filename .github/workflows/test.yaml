@@ -1,0 +1,32 @@
+name: Test
+
+on:
+  push:
+    branches: [ modernize ]
+  pull_request:
+    branches: [ modernize ]
+
+jobs:
+  test:
+    name: Test on Rust ${{ matrix.rust }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust: [stable, beta, nightly]
+      fail-fast: false
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Install Rust ${{ matrix.rust }}
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: ${{ matrix.rust }}
+          override: true
+      
+      - name: Run tests
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+        continue-on-error: ${{ matrix.rust == 'nightly' }}
