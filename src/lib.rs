@@ -1,15 +1,15 @@
 #![doc = include_str!("../README.md")]
 
 use std::error;
-use std::fmt::{Display, Formatter};
 use std::fmt;
-use std::ops::{ShlAssign, AddAssign};
+use std::fmt::{Display, Formatter};
+use std::ops::{AddAssign, ShlAssign};
 
 #[cfg(test)]
 #[macro_use]
 extern crate quickcheck;
 
-#[derive(Debug,PartialEq)]
+#[derive(Debug, PartialEq)]
 pub enum QuintError {
     InputTooSmall,
     InputTooLarge,
@@ -41,7 +41,8 @@ impl error::Error for QuintError {
 ///
 /// More about proquints here at the original proposal: https://arxiv.org/html/0901.4016
 pub trait Quintable
-    where Self: Sized
+where
+    Self: Sized,
 {
     /// Converts this type into a proquint String
     ///
@@ -70,7 +71,7 @@ macro_rules! decons {
         $bitcounter += 4;
         $res <<= 4;
         $res += $x;
-    }}
+    }};
 }
 
 macro_rules! devowel {
@@ -78,7 +79,7 @@ macro_rules! devowel {
         $bitcounter += 2;
         $res <<= 2;
         $res += $x;
-    }}
+    }};
 }
 
 macro_rules! cons_u16 {
@@ -86,7 +87,7 @@ macro_rules! cons_u16 {
         let j: u16 = ($i & MASK_FIRST4_U16) >> 12;
         $i <<= 4;
         $out.push(UINT2CONSONANT[j as usize]);
-    }
+    };
 }
 
 macro_rules! vowel_u16 {
@@ -94,11 +95,12 @@ macro_rules! vowel_u16 {
         let j: u16 = ($i & MASK_FIRST2_U16) >> 14;
         $i <<= 2;
         $out.push(UINT2VOWEL[j as usize]);
-    }
+    };
 }
 
-const UINT2CONSONANT: &[char] = &['b', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p',
-                                          'r', 's', 't', 'v', 'z'];
+const UINT2CONSONANT: &[char] = &[
+    'b', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'r', 's', 't', 'v', 'z',
+];
 const UINT2VOWEL: &[char] = &['a', 'i', 'o', 'u'];
 
 const MASK_FIRST4_U16: u16 = 0xF000;
@@ -110,7 +112,8 @@ const SEPARATOR: char = '-';
 ///
 /// Returns the decoded type as well as the number of bits decoded. A full proquint is 16 bits, so a valid proquint will be a multiple of this size.
 pub fn from_quint<T>(quint: &str) -> (T, usize)
-    where T: Sized + Default + ShlAssign<isize> + AddAssign<T> + From<u8>
+where
+    T: Sized + Default + ShlAssign<isize> + AddAssign<T> + From<u8>,
 {
     let mut bitcounter = 0usize;
     let mut res: T = T::default();
@@ -149,7 +152,8 @@ pub fn from_quint<T>(quint: &str) -> (T, usize)
 }
 
 pub fn unquint_exactly<T>(quint: &str, bits: usize) -> Result<(T, usize), QuintError>
-    where T: Sized + Default + ShlAssign<isize> + AddAssign<T> + From<u8>
+where
+    T: Sized + Default + ShlAssign<isize> + AddAssign<T> + From<u8>,
 {
     let mut bitcounter = 0usize;
     let mut res: T = T::default();
@@ -193,7 +197,7 @@ pub fn unquint_exactly<T>(quint: &str, bits: usize) -> Result<(T, usize), QuintE
         return Ok((res, final_idx));
     }
 
-    if bitcounter >  bits {
+    if bitcounter > bits {
         Err(QuintError::InputInvalid)
     } else {
         Err(QuintError::InputTooSmall)
@@ -213,7 +217,7 @@ macro_rules! impl_from_quint {
                 return Err(QuintError::InputTooLarge);
             }
         }
-    }
+    };
 }
 
 impl Quintable for u16 {
@@ -276,8 +280,10 @@ impl Quintable for u64 {
 impl Quintable for std::net::Ipv4Addr {
     fn to_quint(&self) -> String {
         let octets = self.octets();
-        let as_int: u32 = octets[3] as u32 | (octets[2] as u32) << 8 | (octets[1] as u32) << 16 |
-                          (octets[0] as u32) << 24;
+        let as_int: u32 = octets[3] as u32
+            | (octets[2] as u32) << 8
+            | (octets[1] as u32) << 16
+            | (octets[0] as u32) << 24;
 
         as_int.to_quint()
     }
@@ -290,7 +296,12 @@ impl Quintable for std::net::Ipv4Addr {
         let third = (as_int & 0x0000FF00) >> 8;
         let fourth = as_int & 0x000000FF;
 
-        Ok(std::net::Ipv4Addr::new(first as u8, second as u8, third as u8, fourth as u8))
+        Ok(std::net::Ipv4Addr::new(
+            first as u8,
+            second as u8,
+            third as u8,
+            fourth as u8,
+        ))
     }
 }
 
@@ -304,43 +315,63 @@ impl Quintable for std::net::Ipv6Addr {
     fn from_quint(quint: &str) -> Result<Self, QuintError> {
         let q = &quint;
         let (first, last_i) = unquint_exactly(q, 16)?;
-        let q = &q[last_i+1..];
+        let q = &q[last_i + 1..];
         let (second, last_i) = unquint_exactly(q, 16)?;
-        let q = &q[last_i+1..];
+        let q = &q[last_i + 1..];
         let (third, last_i) = unquint_exactly(q, 16)?;
-        let q = &q[last_i+1..];
+        let q = &q[last_i + 1..];
         let (fourth, last_i) = unquint_exactly(q, 16)?;
-        let q = &q[last_i+1..];
+        let q = &q[last_i + 1..];
         let (fifth, last_i) = unquint_exactly(q, 16)?;
-        let q = &q[last_i+1..];
+        let q = &q[last_i + 1..];
         let (sixth, last_i) = unquint_exactly(q, 16)?;
-        let q = &q[last_i+1..];
+        let q = &q[last_i + 1..];
         let (seventh, last_i) = unquint_exactly(q, 16)?;
-        let q = &q[last_i+1..];
+        let q = &q[last_i + 1..];
         let (eighth, _) = unquint_exactly(q, 16)?;
 
-        Ok(std::net::Ipv6Addr::new(first, second, third, fourth, fifth, sixth, seventh, eighth))
+        Ok(std::net::Ipv6Addr::new(
+            first, second, third, fourth, fifth, sixth, seventh, eighth,
+        ))
     }
 }
 
 #[cfg(test)]
 mod tests {
     use std::net::{Ipv4Addr, Ipv6Addr};
-    use Quintable;
     use QuintError;
+    use Quintable;
 
     #[test]
     fn quint_too_small() {
-        assert_eq!(u16::from_quint("lub").err(), Some(QuintError::InputTooSmall));
-        assert_eq!(u32::from_quint("lubab").err(), Some(QuintError::InputTooSmall));
-        assert_eq!(u64::from_quint("lubab-gutuz").err(), Some(QuintError::InputTooSmall));
+        assert_eq!(
+            u16::from_quint("lub").err(),
+            Some(QuintError::InputTooSmall)
+        );
+        assert_eq!(
+            u32::from_quint("lubab").err(),
+            Some(QuintError::InputTooSmall)
+        );
+        assert_eq!(
+            u64::from_quint("lubab-gutuz").err(),
+            Some(QuintError::InputTooSmall)
+        );
     }
 
     #[test]
     fn quint_too_large() {
-        assert_eq!(u16::from_quint("lubab-gutuz").err(), Some(QuintError::InputTooLarge));
-        assert_eq!(u32::from_quint("lubab-gutuz-kobim").err(), Some(QuintError::InputTooLarge));
-        assert_eq!(u64::from_quint("lubab-gutuz-kobim-fival-bison").err(), Some(QuintError::InputTooLarge));
+        assert_eq!(
+            u16::from_quint("lubab-gutuz").err(),
+            Some(QuintError::InputTooLarge)
+        );
+        assert_eq!(
+            u32::from_quint("lubab-gutuz-kobim").err(),
+            Some(QuintError::InputTooLarge)
+        );
+        assert_eq!(
+            u64::from_quint("lubab-gutuz-kobim-fival-bison").err(),
+            Some(QuintError::InputTooLarge)
+        );
     }
 
     fn ipv4_test(ipv4: [u8; 4], quint: &str) {
@@ -379,7 +410,8 @@ mod tests {
     }
 
     fn back_and_forth<T>(xs: T) -> bool
-        where T: Quintable + PartialEq
+    where
+        T: Quintable + PartialEq,
     {
         let quint = xs.to_quint();
         let y = match T::from_quint(&quint) {
@@ -387,7 +419,7 @@ mod tests {
             Err(e) => {
                 println!("error! {:?}", e);
                 return false;
-            },
+            }
         };
         xs == y
     }
@@ -421,5 +453,4 @@ mod tests {
             back_and_forth(xs)
         }
     }
-
 }
